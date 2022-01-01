@@ -1,3 +1,17 @@
+#  Copyright 2021 Louie Thiros
+# 
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 use strict;
 use warnings;
 
@@ -73,43 +87,46 @@ sub to_hash {
 }
 
 sub serialize_to_bazel {
-    my ($self) = @_;
+    my ($self, $indent) = @_;
     my $name = $self->{'name'};
     my $srcs = $self->{'srcs'};
     my $local_defines = $self->{'local_defines'};
     my $includes = $self->{'includes'};
 
+    # Generate an indent of $indent spaces
+    my $indent_str = ' ' x $indent;
+
     my $result = "";
-    $result .= "cc_library(\n";
-    $result .= "    name = \"$name\",\n";
+    $result .= $indent_str . "native.cc_library(\n";
+    $result .= $indent_str . "    name = \"$name\",\n";
 
-    $result .= "    srcs = [\n";
+    $result .= $indent_str . "    srcs = [\n";
     for my $src (@$srcs) {
-        $result .= "        \"$src\",\n";
+        $result .= $indent_str . "        \"$src\",\n";
     }
-    $result .= "    ],\n";
+    $result .= $indent_str . "    ],\n";
 
-    $result .= "    local_defines = [\n";
+    $result .= $indent_str . "    local_defines = [\n";
     for my $define (@$local_defines) {
-        $result .= "        \"$define\",\n";
+        $result .= $indent_str . "        \"$define\",\n";
     }
-    $result .= "    ],\n";
+    $result .= $indent_str . "    ],\n";
 
-    $result .= "    copts = [\n";
+    $result .= $indent_str . "    copts = [\n";
     for my $include (@$includes) {
         # if $include is not "."
         if ($include ne ".") {
             $include = "external/openssl/$include";
         }
-        $result .= "        \"-I$include\",\n";
+        $result .= $indent_str . "        \"-I$include\",\n";
     }
 
-    $result .= "    deps = [\n";
+    $result .= $indent_str . "    deps = [\n";
     foreach my $dep (@{$self->{'deps'}}) {
-        $result .= "        \"$dep\",\n";
+        $result .= $indent_str . "        \"$dep\",\n";
     }
-    $result .= "    ],\n";
-    $result .= ")\n";
+    $result .= $indent_str . "    ],\n";
+    $result .= $indent_str . ")\n";
     return $result;
 }
 

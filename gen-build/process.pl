@@ -1,9 +1,27 @@
+#  Copyright 2021 Louie Thiros
+# 
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 use warnings;
+# TODO (lthiros) Enable strict mode
+# use strict;
+
 use JSON;
 
-# Import YAML::Tiny
 use YAML::Tiny;
 use BazelLib;
+
+use Getopt::Long qw(GetOptions);
 
 # Create source file object with includes, d_flags, and object, and source
 sub source_file {
@@ -217,6 +235,27 @@ sub second_pass_map_deps {
     };
 }
 
+sub library_groups_to_bazel {
+    my ($library_groups, $output_dir) = @_;
+
+    for $libname (keys %$library_groups) {
+        my $groups = $library_groups->{$libname};
+        my $sanitized_libname = $libname;
+        $sanitized_libname=~ s/\./_/g;
+        open(my $bazel_fh, '>', $output_dir . "/$sanitized_libname.bazel") or die "Could not open file 'openssl_so.bazel' $!";
+
+        print $bazel_fh "def $sanitized_libname():\n";
+        my $idx = 0;
+        for $group (@$groups) {
+            my $bazel_lib = BazelLib->from_library_group($group, "$sanitized_libname-$idx");
+            print $bazel_fh $bazel_lib->serialize_to_bazel(4);
+            print $bazel_fh "\n";
+            $idx += 1;
+        }
+    }
+}
+
+
 sub main {
     my $raw_build_file = "openssl-build.log";
     my $first_pass_source_and_lib = first_pass_source_and_lib($raw_build_file);
@@ -228,6 +267,12 @@ sub main {
         'libraries' => $libraries,
         'sources' => $sources
     };
+
+    # With GetOptions, get the "output_directory" option if it exists
+    my $output_directory = ".";
+    GetOptions(
+        'output_directory=s' => \$output_directory
+    );
 
     # Find library dependencies for "libcrypto.so" and "libssl.so" and "libcrypto.a" and "libssl.a"
     my $libcrypto_so = $libraries->{'libcrypto.so'};
@@ -242,28 +287,7 @@ sub main {
         'libssl.a' => $libssl_a,
     };
 
-    @groups = ();
-    $idx = 0;
-    # Iterate though the array of groups in $libcrypto_so
-
-    for my $group (@$libcrypto_so) {
-        # If $group ref type is not HASH, die and print $group
-        print "Iteration $idx\n";
-        if (ref($group) ne 'HASH') {
-            my $pretty_group = JSON->new->pretty->encode($group);
-            die "Group is not a hash: $pretty_group\n";
-        }
-        push(@groups, BazelLib->from_library_group($group, "libcrypto.so-$idx"));
-        $idx += 1;
-    }
-
-    # Open "openssl_so.bazel" for writing
-    open(my $bazel_fh, '>', 'openssl_so.bazel') or die "Could not open file 'openssl_so.bazel' $!";
-    for my $group (@groups) {
-        print $bazel_fh $group->serialize_to_bazel();
-        print $bazel_fh "\n\n";
-    }
-    close($bazel_fh);
+    library_groups_to_bazel($final_result, $output_directory);
 }
 
 main();
