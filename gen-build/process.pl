@@ -148,7 +148,13 @@ sub get_header_deps {
         open(my $header_deps_fh, '<', $source_file) or die "Could not open $source_file: $!";
         while (my $line = <$header_deps_fh>) {
             if (my @headers = $line =~ /$header_extractor/g) {
-                push(@$header_deps, @headers);
+                my @sanitized_headers = ();
+                for my $header (@headers) {
+                    my $sanitized_header;
+                    $sanitized_header = $header =~ s/[[:alnum:]\.\-]+\/\.\.\///rg;
+                    push(@sanitized_headers, $sanitized_header);
+                }
+                push(@$header_deps, @sanitized_headers);
             }
         }
         close $header_deps_fh;
@@ -242,7 +248,7 @@ sub library_groups_to_bazel {
         my $groups = $library_groups->{$libname};
         my $sanitized_libname = $libname;
         $sanitized_libname=~ s/\./_/g;
-        open(my $bazel_fh, '>', $output_dir . "/$sanitized_libname.bazel") or die "Could not open file 'openssl_so.bazel' $!";
+        open(my $bazel_fh, '>', $output_dir . "/$sanitized_libname.bzl") or die "Could not open file 'openssl_so.bazel' $!";
 
         print $bazel_fh "def $sanitized_libname():\n";
         my $idx = 0;

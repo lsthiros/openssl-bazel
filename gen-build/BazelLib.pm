@@ -120,12 +120,14 @@ sub serialize_to_bazel {
         }
         $result .= $indent_str . "        \"-I$include\",\n";
     }
+    $result .= $indent_str . "    ],\n";
 
     $result .= $indent_str . "    deps = [\n";
     foreach my $dep (@{$self->{'deps'}}) {
         $result .= $indent_str . "        \"$dep\",\n";
     }
     $result .= $indent_str . "    ],\n";
+    $result .= $indent_str . "    visibility = [\"//visibility:public\"],\n";
     $result .= $indent_str . ")\n";
     return $result;
 }
