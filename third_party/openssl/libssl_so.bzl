@@ -76,8 +76,8 @@ def libssl_so():
             "ECP_NISTZ256_ASM",
             "X25519_ASM",
             "POLY1305_ASM",
-            "OPENSSLDIR",
-            "ENGINESDIR",
+            "OPENSSLDIR=\"\\\"/usr/local/ssl\\\"\"",
+            "ENGINESDIR=\"\\\"/usr/local/lib/engines-1.1\\\"\"",
             "NDEBUG",
         ],
         copts = [

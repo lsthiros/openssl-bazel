@@ -6,5 +6,5 @@ exports_files(
         "include/crypto/bn_conf.h",
         "include/crypto/dso_conf.h",
     ] + glob(["crypto/**/*.s"]),
-    ["//visibility:public"],
+    visibility = ["//visibility:public"],
 )

@@ -40,16 +40,5 @@ cc_library(
         "external/openssl/include",
         "third_party/openssl/include",
     ],
-)
-
-cc_library(
-    name = "crypto",
-    deps = [
-        ":openssl_headers",
-        ":crypto_so-1",
-        ":crypto_so-2",
-        ":crypto_so-3",
-        ":crypto_so-4",
-        ":crypto_so-5",
-    ],
+    visibility = ["//visibility:public"],
 )
