@@ -43,6 +43,29 @@ def libcrypto_so():
     )
 
     native.cc_library(
+        name = "curve_arch_headers",
+        hdrs = [
+            "crypto/ec/curve448/arch_32/arch_intrinsics.h",
+            "crypto/ec/curve448/arch_32/f_impl.h",
+        ],
+        strip_include_prefix = "crypto/ec/curve448/arch_32",
+    )
+
+    native.cc_library(
+        name = "curve_headers",
+        hdrs = [
+            "crypto/ec/curve448/curve448utils.h",
+            "crypto/ec/curve448/word.h",
+            "crypto/ec/curve448/curve448_local.h",
+            "crypto/ec/curve448/point_448.h",
+            "crypto/ec/curve448/ed448.h",
+            "crypto/ec/curve448/field.h",
+        ],
+        strip_include_prefix = "crypto/ec/curve448",
+    )
+
+
+    native.cc_library(
         name = "crypto_so-1",
         srcs = [
             "crypto/evp/evp_local.h",
@@ -130,24 +153,8 @@ def libcrypto_so():
     )
 
     native.cc_library(
-        name = "curve_arch_headers",
-        hdrs = [
-            "crypto/ec/curve448/arch_32/arch_intrinsics.h",
-            "crypto/ec/curve448/arch_32/f_impl.h",
-        ],
-        strip_include_prefix = "crypto/ec/curve448/arch_32",
-        visibility = ["//visibility:public"],
-    )
-
-    native.cc_library(
         name = "crypto_so-3",
         srcs = [
-            "crypto/ec/curve448/curve448utils.h",
-            "crypto/ec/curve448/field.h",
-            "crypto/ec/curve448/word.h",
-            "crypto/ec/curve448/curve448_local.h",
-            "crypto/ec/curve448/ed448.h",
-            "crypto/ec/curve448/point_448.h",
             "crypto/ec/curve448/arch_32/f_impl.c",
             "crypto/ec/curve448/curve448.c",
             "crypto/ec/curve448/curve448_tables.c",
@@ -180,15 +187,9 @@ def libcrypto_so():
             "ENGINESDIR=\"\\\"/usr/local/lib/engines-1.1\\\"\"",
             "NDEBUG",
         ],
-        copts = [
-            "-I.",
-            "-Ithird_party/openssl/include/",
-            "-Iexternal/openssl/crypto/ec/curve448",
-            "-Iexternal/openssl/crypto/ec/curve448/arch_32",
-            "-Iexternal/openssl/include",
-        ],
         deps = [
             ":curve_arch_headers",
+            ":curve_headers",
             "@openssl//:openssl_headers",
         ],
         visibility = ["//visibility:public"],
@@ -197,7 +198,6 @@ def libcrypto_so():
     native.cc_library(
         name = "crypto_so-4",
         srcs = [
-            "crypto/modes/modes_local.h",
             "crypto/rand/rand_local.h",
             "crypto/evp/e_aes_cbc_hmac_sha1.c",
             "crypto/evp/e_aes_cbc_hmac_sha256.c",
@@ -229,11 +229,10 @@ def libcrypto_so():
             "NDEBUG",
         ],
         copts = [
-            "-Iexternal/openssl/crypto/modes",
-            "-Iexternal/openssl/include",
         ],
         deps = [
-            "@openssl//:openssl_headers",
+            ":crypto_modes_header",
+            ":openssl_headers",
         ],
         visibility = ["//visibility:public"],
     )
@@ -947,16 +946,12 @@ def libcrypto_so():
             "ENGINESDIR=\"\\\"/usr/local/lib/engines-1.1\\\"\"",
             "NDEBUG",
         ],
-        copts = [
-            "-I.",
-            "-Iexternal/openssl/include",
-        ],
         textual_hdrs = [
             "crypto/LPdir_unix.c",
             "crypto/des/ncbc_enc.c",
         ],
         deps = [
-            "@openssl//:openssl_headers",
+            ":openssl_headers",
             "@//third_party/openssl:openssl_conf_headers",
         ],
         visibility = ["//visibility:public"],
