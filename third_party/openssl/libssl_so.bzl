@@ -80,12 +80,8 @@ def libssl_so():
             "ENGINESDIR=\"\\\"/usr/local/lib/engines-1.1\\\"\"",
             "NDEBUG",
         ],
-        copts = [
-            "-I.",
-            "-Iexternal/openssl/include",
-        ],
         deps = [
-            ":openssl_headers",
+            "@openssl//:openssl_headers",
         ],
         visibility = ["//visibility:public"],
     )

@@ -15,7 +15,7 @@ cc_binary(
 )
 
 cc_library(
-    name = "libcrypto.a",
+    name = "crypto",
     deps = [
         "@openssl//:openssl_headers",
         "@openssl//:crypto_so-1",
@@ -36,7 +36,16 @@ cc_binary(
         "@openssl//:openssl_headers",
         ":libcrypto.so",
     ],
-    # linkstatic = False,
     linkshared = True,
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "ssl",
+    deps = [
+        "@openssl//:libssl_so-0",
+        "@openssl//:openssl_headers",
+        ":libcrypto.so",
+    ],
     visibility = ["//visibility:public"],
 )

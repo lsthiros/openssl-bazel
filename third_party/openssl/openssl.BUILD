@@ -32,13 +32,13 @@ openssl_local_defines = [
 
 cc_library(
     name = "openssl_headers",
-    hdrs = glob(["include/**/*.h"]) + [
-        "@//third_party/openssl:include/openssl/opensslconf.h",
-    ],
+    hdrs = glob(["include/**/*.h"]),
     local_defines = openssl_local_defines,
     includes = [
-        "external/openssl/include",
-        "third_party/openssl/include",
+        "include",
+    ],
+    deps = [
+        "@//third_party/openssl:openssl_conf_headers",
     ],
     visibility = ["//visibility:public"],
 )

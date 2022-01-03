@@ -76,7 +76,7 @@ def libcrypto_so():
             "-Iexternal/openssl/include",
         ],
         deps = [
-            ":openssl_headers",
+            "@openssl//:openssl_headers",
         ],
         visibility = ["//visibility:public"],
     )
@@ -130,7 +130,7 @@ def libcrypto_so():
             "-Iexternal/openssl/include",
         ],
         deps = [
-            ":openssl_headers",
+            "@openssl//:openssl_headers",
         ],
         visibility = ["//visibility:public"],
     )
@@ -186,7 +186,7 @@ def libcrypto_so():
             "-Iexternal/openssl/include",
         ],
         deps = [
-            ":openssl_headers",
+            "@openssl//:openssl_headers",
         ],
         visibility = ["//visibility:public"],
     )
@@ -232,7 +232,7 @@ def libcrypto_so():
             "-Iexternal/openssl/include",
         ],
         deps = [
-            ":openssl_headers",
+            "@openssl//:openssl_headers",
         ],
         visibility = ["//visibility:public"],
     )
@@ -958,7 +958,7 @@ def libcrypto_so():
             "crypto/des/ncbc_enc.c",
         ],
         deps = [
-            ":openssl_headers",
+            "@openssl//:openssl_headers",
         ],
         visibility = ["//visibility:public"],
     )
