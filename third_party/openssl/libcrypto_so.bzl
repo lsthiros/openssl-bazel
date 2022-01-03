@@ -33,11 +33,19 @@ def libcrypto_so():
         ],
     )
 
+
+    native.cc_library(
+        name = "crypto_modes_header",
+        hdrs = [
+            "crypto/modes/modes_local.h",
+        ],
+        strip_include_prefix = "crypto/modes",
+    )
+
     native.cc_library(
         name = "crypto_so-1",
         srcs = [
             "crypto/evp/evp_local.h",
-            "crypto/modes/modes_local.h",
             "crypto/evp/e_aes.c",
             "crypto/evp/e_aria.c",
             "crypto/evp/e_camellia.c",
@@ -68,14 +76,8 @@ def libcrypto_so():
             "ENGINESDIR=\"\\\"/usr/local/lib/engines-1.1\\\"\"",
             "NDEBUG",
         ],
-        copts = [
-            "-I.",
-            "-Ithird_party/openssl/include/",
-            "-Iexternal/openssl/crypto",
-            "-Iexternal/openssl/crypto/modes",
-            "-Iexternal/openssl/include",
-        ],
         deps = [
+            ":crypto_modes_header",
             "@openssl//:openssl_headers",
         ],
         visibility = ["//visibility:public"],
@@ -94,8 +96,6 @@ def libcrypto_so():
             "crypto/evp/e_des3.c",
             "crypto/evp/m_sha3.c",
             "crypto/modes/gcm128.c",
-            "@//third_party/openssl:include/crypto/bn_conf.h",
-            "@//third_party/openssl:crypto/buildinf.h",
         ],
         local_defines = [
             "OPENSSL_USE_NODELETE",
