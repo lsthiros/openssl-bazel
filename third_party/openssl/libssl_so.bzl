@@ -85,4 +85,3 @@ def libssl_so():
         ],
         visibility = ["//visibility:public"],
     )
-

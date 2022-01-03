@@ -122,24 +122,26 @@ def libcrypto_so():
             "ENGINESDIR=\"\\\"/usr/local/lib/engines-1.1\\\"\"",
             "NDEBUG",
         ],
-        copts = [
-            "-I.",
-            "-Ithird_party/openssl/include/",
-            "-Ithird_party/openssl/crypto",
-            "-Iexternal/openssl/crypto",
-            "-Iexternal/openssl/include",
-        ],
         deps = [
+            "@//third_party/openssl:buildinf_headers",
             "@openssl//:openssl_headers",
         ],
         visibility = ["//visibility:public"],
     )
 
     native.cc_library(
-        name = "crypto_so-3",
-        srcs = [
+        name = "curve_arch_headers",
+        hdrs = [
             "crypto/ec/curve448/arch_32/arch_intrinsics.h",
             "crypto/ec/curve448/arch_32/f_impl.h",
+        ],
+        strip_include_prefix = "crypto/ec/curve448/arch_32",
+        visibility = ["//visibility:public"],
+    )
+
+    native.cc_library(
+        name = "crypto_so-3",
+        srcs = [
             "crypto/ec/curve448/curve448utils.h",
             "crypto/ec/curve448/field.h",
             "crypto/ec/curve448/word.h",
@@ -186,6 +188,7 @@ def libcrypto_so():
             "-Iexternal/openssl/include",
         ],
         deps = [
+            ":curve_arch_headers",
             "@openssl//:openssl_headers",
         ],
         visibility = ["//visibility:public"],
@@ -226,8 +229,6 @@ def libcrypto_so():
             "NDEBUG",
         ],
         copts = [
-            "-I.",
-            "-Ithird_party/openssl/include/",
             "-Iexternal/openssl/crypto/modes",
             "-Iexternal/openssl/include",
         ],
@@ -920,8 +921,6 @@ def libcrypto_so():
             "crypto/x509v3/v3_tlsf.c",
             "crypto/x509v3/v3_utl.c",
             "crypto/x509v3/v3err.c",
-            "@//third_party/openssl:include/crypto/bn_conf.h",
-            "@//third_party/openssl:include/crypto/dso_conf.h",
         ],
         local_defines = [
             "OPENSSL_USE_NODELETE",
@@ -951,7 +950,6 @@ def libcrypto_so():
         copts = [
             "-I.",
             "-Iexternal/openssl/include",
-            "-Ithird_party/openssl/include/",
         ],
         textual_hdrs = [
             "crypto/LPdir_unix.c",
@@ -959,6 +957,7 @@ def libcrypto_so():
         ],
         deps = [
             "@openssl//:openssl_headers",
+            "@//third_party/openssl:openssl_conf_headers",
         ],
         visibility = ["//visibility:public"],
     )

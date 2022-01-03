@@ -42,6 +42,9 @@ cc_binary(
 
 cc_library(
     name = "ssl",
+    hdrs = [
+        "@openssl//:openssl_headers",
+    ],
     deps = [
         "@openssl//:libssl_so-0",
         "@openssl//:openssl_headers",

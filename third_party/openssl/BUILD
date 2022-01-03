@@ -7,11 +7,9 @@ exports_files(
 )
 
 cc_library(
-    name = "buildinf_header",
-    srcs = ["crypto/buildinf.h"],
-    includes = [
-        "crypto",
-    ],
+    name = "buildinf_headers",
+    hdrs = ["crypto/buildinf.h"],
+    strip_include_prefix = "crypto",
     visibility = ["//visibility:public"],
 )
 
