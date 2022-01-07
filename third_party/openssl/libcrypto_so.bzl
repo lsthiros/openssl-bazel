@@ -1,45 +1,11 @@
 def libcrypto_so():
-    native.filegroup(
-        name = "crypto_asm",
-        srcs = [
-            "@//third_party/openssl:crypto/aes/aesni-mb-x86_64.s",
-            "@//third_party/openssl:crypto/aes/aesni-sha1-x86_64.s",
-            "@//third_party/openssl:crypto/aes/aesni-sha256-x86_64.s",
-            "@//third_party/openssl:crypto/aes/aesni-x86_64.s",
-            "@//third_party/openssl:crypto/aes/vpaes-x86_64.s",
-            "@//third_party/openssl:crypto/bn/rsaz-avx2.s",
-            "@//third_party/openssl:crypto/bn/rsaz-x86_64.s",
-            "@//third_party/openssl:crypto/bn/x86_64-gf2m.s",
-            "@//third_party/openssl:crypto/bn/x86_64-mont.s",
-            "@//third_party/openssl:crypto/bn/x86_64-mont5.s",
-            "@//third_party/openssl:crypto/camellia/cmll-x86_64.s",
-            "@//third_party/openssl:crypto/chacha/chacha-x86_64.s",
-            "@//third_party/openssl:crypto/ec/ecp_nistz256-x86_64.s",
-            "@//third_party/openssl:crypto/ec/x25519-x86_64.s",
-            "@//third_party/openssl:crypto/md5/md5-x86_64.s",
-            "@//third_party/openssl:crypto/modes/aesni-gcm-x86_64.s",
-            "@//third_party/openssl:crypto/modes/ghash-x86_64.s",
-            "@//third_party/openssl:crypto/poly1305/poly1305-x86_64.s",
-            "@//third_party/openssl:crypto/rc4/rc4-md5-x86_64.s",
-            "@//third_party/openssl:crypto/rc4/rc4-x86_64.s",
-            "@//third_party/openssl:crypto/sha/keccak1600-x86_64.s",
-            "@//third_party/openssl:crypto/sha/sha1-mb-x86_64.s",
-            "@//third_party/openssl:crypto/sha/sha1-x86_64.s",
-            "@//third_party/openssl:crypto/sha/sha256-mb-x86_64.s",
-            "@//third_party/openssl:crypto/sha/sha256-x86_64.s",
-            "@//third_party/openssl:crypto/sha/sha512-x86_64.s",
-            "@//third_party/openssl:crypto/whrlpool/wp-x86_64.s",
-            "@//third_party/openssl:crypto/x86_64cpuid.s",
-        ],
-    )
-
-
     native.cc_library(
         name = "crypto_modes_header",
         hdrs = [
             "crypto/modes/modes_local.h",
         ],
         strip_include_prefix = "crypto/modes",
+        visibility = ["//visibility:public"],
     )
 
     native.cc_library(
@@ -49,6 +15,7 @@ def libcrypto_so():
             "crypto/ec/curve448/arch_32/f_impl.h",
         ],
         strip_include_prefix = "crypto/ec/curve448/arch_32",
+        visibility = ["//visibility:public"],
     )
 
     native.cc_library(
@@ -62,12 +29,23 @@ def libcrypto_so():
             "crypto/ec/curve448/field.h",
         ],
         strip_include_prefix = "crypto/ec/curve448",
+        visibility = ["//visibility:public"],
     )
 
-    native.cc_library(
-        name = "crypto",
+    native.filegroup(
+        name = "crypto_headers",
         srcs = [
-            ":crypto_asm",
+            ":crypto_modes_header",
+            ":openssl_public_headers",
+            ":curve_arch_headers",
+            ":curve_headers",
+        ],
+        visibility = ["//visibility:public"],
+    )
+
+    native.filegroup(
+        name = "crypto_sources",
+        srcs = [
             "crypto/aes/aes_cbc.c",
             "crypto/aes/aes_cfb.c",
             "crypto/aes/aes_core.c",
@@ -767,43 +745,14 @@ def libcrypto_so():
             "crypto/x509v3/v3err.c",
             "e_os.h",
         ],
-        local_defines = [
-            "OPENSSL_USE_NODELETE",
-            "L_ENDIAN",
-            "OPENSSL_PIC",
-            "OPENSSL_CPUID_OBJ",
-            "OPENSSL_IA32_SSE2",
-            "OPENSSL_BN_ASM_MONT",
-            "OPENSSL_BN_ASM_MONT5",
-            "OPENSSL_BN_ASM_GF2m",
-            "SHA1_ASM",
-            "SHA256_ASM",
-            "SHA512_ASM",
-            "KECCAK1600_ASM",
-            "RC4_ASM",
-            "MD5_ASM",
-            "AESNI_ASM",
-            "VPAES_ASM",
-            "GHASH_ASM",
-            "ECP_NISTZ256_ASM",
-            "X25519_ASM",
-            "POLY1305_ASM",
-            "OPENSSLDIR=\"\\\"/usr/local/ssl\\\"\"",
-            "ENGINESDIR=\"\\\"/usr/local/lib/engines-1.1\\\"\"",
-            "NDEBUG",
-        ],
-        textual_hdrs = [
-            "crypto/LPdir_unix.c",
-            "crypto/des/ncbc_enc.c",
-        ],
-        deps = [
-            "@//third_party/openssl:openssl_conf_headers",
-            "@//third_party/openssl:buildinf_headers",
-            ":crypto_modes_header",
-            ":openssl_headers",
-            ":curve_arch_headers",
-            ":curve_headers",
-        ],
         visibility = ["//visibility:public"],
     )
 
+    native.filegroup(
+        name = "crypto_textual_headers",
+        srcs = [
+            "crypto/LPdir_unix.c",
+            "crypto/des/ncbc_enc.c",
+        ],
+        visibility = ["//visibility:public"],
+    )
