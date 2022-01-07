@@ -116,3 +116,17 @@ cc_library(
         ":buildinf_headers",
     ]
 )
+
+cc_library(
+    name = "ssl",
+    srcs = [
+        "@openssl//:libssl_sources",
+    ],
+    hdrs = [
+        "@openssl//:openssl_public_headers",
+    ],
+    deps = [
+        ":crypt",
+    ],
+    local_defines = openssl_local_defines,
+)

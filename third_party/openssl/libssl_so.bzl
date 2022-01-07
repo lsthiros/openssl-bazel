@@ -55,6 +55,7 @@ def libssl_so():
             "ssl/tls13_enc.c",
             "ssl/tls_srp.c",
         ],
+        visibility = ["//visibility:public"],
     )
 
 local_defines = [
