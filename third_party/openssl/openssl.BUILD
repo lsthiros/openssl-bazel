@@ -1,5 +1,5 @@
-load("@//third_party/openssl:libcrypto_so.bzl", "libcrypto_so")
-load("@//third_party/openssl:libssl_so.bzl", "libssl_so")
+load("@openssl-bazel//third_party/openssl:libcrypto_so.bzl", "libcrypto_so")
+load("@openssl-bazel//third_party/openssl:libssl_so.bzl", "libssl_so")
 
 libcrypto_so()
 libssl_so()
